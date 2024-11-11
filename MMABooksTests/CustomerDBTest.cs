@@ -19,13 +19,13 @@ namespace MMABooksTests
         {
             db = new CustomerDB();
             DBCommand command = new DBCommand();
-            command.CommandText = "usp_testingResetCustomer1Data";  // Changed to correct stored procedure
+            command.CommandText = "usp_testingResetCustomer1Data";  
             command.CommandType = CommandType.StoredProcedure;
             db.RunNonQueryProcedure(command);
         }
 
         [TearDown]
-        public void CleanUp()    // Separated TearDown from Test
+        public void CleanUp()    
         {
             if (db != null)
             {

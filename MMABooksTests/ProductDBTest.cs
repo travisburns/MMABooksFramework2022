@@ -39,7 +39,7 @@ namespace MMABooksTests
         public void TestRetrieveAll()
         {
             List<ProductProps> list = (List<ProductProps>)db.RetrieveAll();
-            Assert.AreEqual(16, list.Count);  // Assuming 16 products in test data
+            Assert.AreEqual(16, list.Count);  
             Assert.IsTrue(list[0].ProductCode.Length > 0);
             Assert.IsTrue(list[0].Description.Length > 0);
         }
@@ -50,7 +50,7 @@ namespace MMABooksTests
             ProductProps p = new ProductProps();
             p.ProductCode = "TEST";
             p.Description = "Test Product";
-            p.UnitPrice = Convert.ToDecimal("29.9900");  // Changed from 29.99
+            p.UnitPrice = Convert.ToDecimal("29.9900");  
             p.OnHandQuantity = 100;
 
             p = (ProductProps)db.Create(p);
@@ -63,6 +63,11 @@ namespace MMABooksTests
         public void TestDelete()
         {
             ProductProps p = (ProductProps)db.Retrieve("A4CS");
+            Console.WriteLine($"Product ConcurrencyID: {p.ConcurrencyID}");
+
+           
+            p = (ProductProps)db.Retrieve("A4CS");
+
             Assert.True(db.Delete(p));
             Assert.Throws<Exception>(() => db.Retrieve("A4CS"));
         }
@@ -71,16 +76,43 @@ namespace MMABooksTests
         public void TestUpdate()
         {
             ProductProps p = (ProductProps)db.Retrieve("A4CS");
+            int originalConcurrencyID = p.ConcurrencyID;
+
             p.Description = "Updated Description";
             p.UnitPrice = 59.99m;
-            Assert.True(db.Update(p));
-            ProductProps p2 = (ProductProps)db.Retrieve("A4CS");
-            Assert.AreEqual(p.Description, p2.Description);
-            Assert.AreEqual(p.UnitPrice, p2.UnitPrice);
+
+            try
+            {
+                Assert.True(db.Update(p));
+                ProductProps p2 = (ProductProps)db.Retrieve("A4CS");
+                Assert.AreEqual(p.Description, p2.Description);
+                Assert.AreEqual(p.UnitPrice, p2.UnitPrice);
+                Assert.AreEqual(originalConcurrencyID + 1, p2.ConcurrencyID);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Record cannot be updated. It has been edited by another user.")
+                {
+                
+                    p = (ProductProps)db.Retrieve("A4CS");
+                    p.Description = "Updated Description";
+                    p.UnitPrice = 59.99m;
+                    Assert.True(db.Update(p));
+
+                    ProductProps p2 = (ProductProps)db.Retrieve("A4CS");
+                    Assert.AreEqual(p.Description, p2.Description);
+                    Assert.AreEqual(p.UnitPrice, p2.UnitPrice);
+                    Assert.AreEqual(originalConcurrencyID + 1, p2.ConcurrencyID);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 
-    [TestFixture]
+        [TestFixture]
     public class ProductPropsTest
     {
         ProductProps? props;

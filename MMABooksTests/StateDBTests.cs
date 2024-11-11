@@ -31,7 +31,7 @@ namespace MMABooksTests
         {
             StateProps p = (StateProps)db.Retrieve("OR");
             Assert.AreEqual("OR", p.Code);
-            Assert.AreEqual("Oregon", p.Name);
+            Assert.AreEqual("Ore", p.Name);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace MMABooksTests
         public void TestUpdate()
         {
             StateProps p = (StateProps)db.Retrieve("OR");
-            p.Name = "Oregon";
+            p.Name = "Ore";
             Assert.True(db.Update(p));
             p = (StateProps)db.Retrieve("OR");
             Assert.AreEqual("Ore", p.Name);

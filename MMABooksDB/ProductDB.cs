@@ -25,10 +25,10 @@ namespace MMABooksDB
             DBCommand command = new DBCommand();
             command.CommandText = "usp_ProductCreate";
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.Add("prod_code", DBDbType.VarChar);         // Changed from prodCode
-            command.Parameters.Add("prod_description", DBDbType.VarChar);  // Changed from description
-            command.Parameters.Add("unit_price", DBDbType.Decimal);        // Changed from unitPrice
-            command.Parameters.Add("on_hand", DBDbType.Int32);            // Changed from onHand
+            command.Parameters.Add("prod_code", DBDbType.VarChar);         
+            command.Parameters.Add("prod_description", DBDbType.VarChar);  
+            command.Parameters.Add("unit_price", DBDbType.Decimal);       
+            command.Parameters.Add("on_hand", DBDbType.Int32);           
 
             command.Parameters["prod_code"].Value = props.ProductCode;
             command.Parameters["prod_description"].Value = props.Description;
@@ -56,7 +56,6 @@ namespace MMABooksDB
                     mConnection.Close();
             }
         }
-
         public bool Delete(IBaseProps p)
         {
             ProductProps props = (ProductProps)p;
@@ -72,7 +71,12 @@ namespace MMABooksDB
 
             try
             {
-                rowsAffected = RunNonQueryProcedure(command);
+                DBDataReader reader = RunProcedure(command);
+                if (reader.Read())
+                {
+                    rowsAffected = reader.GetInt32(0);
+                }
+
                 if (rowsAffected == 1)
                 {
                     return true;
@@ -102,7 +106,7 @@ namespace MMABooksDB
 
             command.CommandText = "usp_ProductSelect";
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.Add("prod_code", DBDbType.VarChar);        // Changed from prodCode
+            command.Parameters.Add("prod_code", DBDbType.VarChar);       
             command.Parameters["prod_code"].Value = key.ToString();
 
             try
@@ -175,11 +179,11 @@ namespace MMABooksDB
             DBCommand command = new DBCommand();
             command.CommandText = "usp_ProductUpdate";
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.Add("code", DBDbType.VarChar);       // Changed from prod_code
-            command.Parameters.Add("name", DBDbType.VarChar);       // Changed from prod_description
-            command.Parameters.Add("price", DBDbType.Decimal);      // Changed from unit_price
-            command.Parameters.Add("qty", DBDbType.Int32);         // Changed from on_hand
-            command.Parameters.Add("c", DBDbType.Int32);          // Changed from concurrency_id
+            command.Parameters.Add("code", DBDbType.VarChar);
+            command.Parameters.Add("name", DBDbType.VarChar);
+            command.Parameters.Add("price", DBDbType.Decimal);
+            command.Parameters.Add("qty", DBDbType.Int32);
+            command.Parameters.Add("c", DBDbType.Int32);
 
             command.Parameters["code"].Value = props.ProductCode;
             command.Parameters["name"].Value = props.Description;
@@ -189,7 +193,12 @@ namespace MMABooksDB
 
             try
             {
-                rowsAffected = RunNonQueryProcedure(command);
+                DBDataReader reader = RunProcedure(command);
+                if (reader.Read())
+                {
+                    rowsAffected = reader.GetInt32(0);
+                }
+
                 if (rowsAffected == 1)
                 {
                     props.ConcurrencyID++;

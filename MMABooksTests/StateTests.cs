@@ -54,7 +54,7 @@ namespace MMABooksTests
         public void TestSaveToDataStore()
         {
             State s = new State();
-            s.Abbreviation = "??";
+            s.Abbreviation = "ZZ";
             s.Name = "Where am I";
             s.Save();
             State s2 = new State("ZZ");

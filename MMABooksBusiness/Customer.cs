@@ -15,7 +15,7 @@ namespace MMABooksBusiness
         {
             get
             {
-                return ((Customerprops)mProps).CustomerId;
+                return ((CustomerProps)mProps).CustomerId;
             }
         }
         
